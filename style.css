@@ -1,0 +1,113 @@
+:root {
+  --primary: #2563eb;
+  --correct: #16a34a;
+  --wrong: #dc2626;
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --radius: 12px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: #111827;
+  line-height: 1.5;
+  padding: 20px;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: var(--card);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+select,
+input,
+button {
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+button {
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.hidden {
+  display: none;
+}
+
+#question {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+#options {
+  display: grid;
+  gap: 10px;
+}
+
+.option-btn {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  background: #f3f4f6;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option-btn:hover {
+  background: #e0e7ff;
+}
+
+.option-btn.correct {
+  background: #dcfce7;
+  border-color: var(--correct);
+}
+
+.option-btn.wrong {
+  background: #fee2e2;
+  border-color: var(--wrong);
+}
+
+#result {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 20px;
+}

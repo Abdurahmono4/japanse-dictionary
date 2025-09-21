@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Yaponcha N5 — Sifatli Test</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <style>
+      /* ====== Fonts & reset ====== */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap");
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, Arial, sans-serif;
+        background: radial-gradient(
+            1000px 600px at 10% 10%,
+            rgba(37, 99, 235, 0.12),
+            transparent 10%
+          ),
+          radial-gradient(
+            800px 500px at 90% 90%,
+            rgba(16, 185, 129, 0.06),
+            transparent 10%
+          ),
+          linear-gradient(180deg, #f6fbff, #f0f6ff);
+        color: #0f172a;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .wrap {
+        max-width: 980px;
+        margin: 28px auto;
+        padding: 20px;
+      }
+
+      /* ====== Header / Hero ====== */
+      .hero {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        padding: 18px;
+        border-radius: 14px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.85),
+          rgba(255, 255, 255, 0.7)
+        );
+        box-shadow: 0 10px 40px rgba(15, 23, 42, 0.06);
+        border: 1px solid rgba(15, 23, 42, 0.04);
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.12);
+      }
+      .hero h1 {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+      .hero p {
+        margin: 4px 0 0;
+        color: #475569;
+        font-size: 0.95rem;
+      }
+
+      /* ====== Layout ====== */
+      .grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+      @media (max-width: 880px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ====== Left panel (settings) ====== */
+      .panel {
+        padding: 16px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #fff, #fbfdff);
+        border: 1px solid rgba(15, 23, 42, 0.03);
+        box-shadow: 0 6px 20px rgba(2, 6, 23, 0.04);
+      }
+      .panel h2 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+      }
+      .field {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        font-size: 0.86rem;
+        color: #334155;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+      select,
+      input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(15, 23, 42, 0.06);
+        font-size: 0.95rem;
+        background: #fff;
+      }
+      .range-row {
+        display: flex;
+        gap: 8px;
+      }
+      .range-row input {
+        flex: 1;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .btn.primary {
+        background: linear-gradient(90deg, #2563eb, #7c3aed);
+        color: #fff;
+        box-shadow: 0 10px 30px rgba(37, 99, 235, 0.12);
+      }
+      .btn.ghost {
+        background: transparent;
+        border: 1px solid rgba(15, 23, 42, 0.06);
+        color: #0f172a;
+      }
+      .small {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 6px;
+      }
+
+      /* ====== Right area (quiz) ====== */
+      .stage {
+        min-height: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .card {
+        padding: 18px;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        border: 1px solid rgba(15, 23, 42, 0.03);
+        box-shadow: 0 10px 30px rgba(2, 6, 23, 0.04);
+      }
+      .question-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .counter {
+        font-weight: 700;
+        color: #111827;
+      }
+      .question {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 8px 0;
+      }
+      .meta {
+        color: #64748b;
+        font-size: 0.92rem;
+      }
+
+      /* options grid */
+      .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-top: 10px;
+      }
+      @media (max-width: 640px) {
+        .options {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .option {
+        position: relative;
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #f8fafc, #f3f6ff);
+        border: 1px solid rgba(15, 23, 42, 0.04);
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: transform 0.12s ease, box-shadow 0.12s ease,
+          background 0.18s;
+        box-shadow: 0 6px 18px rgba(2, 6, 23, 0.03);
+      }
+      .option:focus {
+        outline: 3px solid rgba(37, 99, 235, 0.12);
+        outline-offset: 3px;
+      }
+      .option:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 40px rgba(2, 6, 23, 0.06);
+      }
+      .option .left {
+        min-width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #fff, #f1f5f9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .option .txt {
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .option.small {
+        padding: 10px;
+      }
+      .option.correct {
+        background: linear-gradient(90deg, #ecfccb, #bbf7d0);
+        border-color: rgba(16, 185, 129, 0.18);
+        box-shadow: 0 12px 28px rgba(16, 185, 129, 0.06);
+        transform: scale(1.02);
+      }
+      .option.wrong {
+        background: linear-gradient(90deg, #ffe4e6, #ffcdd2);
+        border-color: rgba(239, 68, 68, 0.12);
+        box-shadow: 0 12px 28px rgba(239, 68, 68, 0.04);
+        transform: translateX(-4px);
+      }
+
+      /* progress */
+      .progress-wrap {
+        height: 14px;
+        background: rgba(2, 6, 23, 0.04);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, #2563eb, #7c3aed);
+        transition: width 0.6s cubic-bezier(0.2, 0.9, 0.2, 1);
+      }
+
+      /* result */
+      .result-card {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .medal {
+        width: 96px;
+        height: 96px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        background: linear-gradient(180deg, #fff8e6, #fff1d6);
+        box-shadow: 0 12px 36px rgba(250, 204, 21, 0.12);
+      }
+      .result-text {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #0f172a;
+      }
+
+      /* footer small */
+      .footer {
+        margin-top: 16px;
+        font-size: 0.9rem;
+        color: #475569;
+        text-align: center;
+      }
+
+      /* animations */
+      .fade-in {
+        animation: fadeIn 0.36s ease both;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="hero">
+        <div class="logo">JL</div>
+        <div>
+          <h1>Yaponcha N5 — Test Platformasi</h1>
+          <p>
+            Jozibali, sifatli va interaktiv test. Bo‘limlarni qo‘shing, test
+            boshlang.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- LEFT: Settings -->
+        <div class="panel">
+          <h2>Sozlamalar</h2>
+
+          <div class="field">
+            <label for="lessonSelect">Bo‘lim tanlang (yoki bir nechta):</label>
+            <select id="lessonSelect" multiple style="height: 130px"></select>
+            <div class="small">
+              CTRL/CMD + Click bilan bir nechta bo‘lim tanlang.
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Yoki bo‘lim oralig‘i tanlash (N–K):</label>
+            <div class="range-row">
+              <input id="fromIdx" type="number" min="1" placeholder="N" />
+              <input id="toIdx" type="number" min="1" placeholder="K" />
+            </div>
+            <div class="small">
+              Agar shu maydon to‘ldirilsa, yuqoridagi select chetlab o‘tadi.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="count">Savollar soni:</label>
+            <input id="count" type="number" min="1" max="200" value="10" />
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 6px">
+            <button id="startBtn" class="btn primary">
+              🚀 Testni boshlash
+            </button>
+            <button id="resetBtn" class="btn ghost">🔁 Qayta yuklash</button>
+          </div>
+
+          <div style="margin-top: 12px" class="small">
+            Maslahat: kamida 10 ta savol oling. Bo‘limlar bazaga qo‘shilganda
+            test avtomatik yangilanadi.
+          </div>
+        </div>
+
+        <!-- RIGHT: Quiz / Stage -->
+        <div class="stage">
+          <div id="stageArea" class="card fade-in">
+            <div class="question-row">
+              <div>
+                <div class="counter" id="progressText">Tanlangan: 0 savol</div>
+                <div class="meta" id="lessonMeta">
+                  Hech qanday test boshlanmagan
+                </div>
+              </div>
+              <div style="min-width: 180px">
+                <div class="progress-wrap" aria-hidden="true" title="Progress">
+                  <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <div
+                  style="
+                    text-align: right;
+                    font-size: 0.9rem;
+                    margin-top: 6px;
+                    color: #64748b;
+                  "
+                  id="pctText"
+                >
+                  0%
+                </div>
+              </div>
+            </div>
+
+            <div id="quizArea" style="margin-top: 14px">
+              <div
+                style="
+                  text-align: center;
+                  color: #64748b;
+                  padding: 40px 10px;
+                  border-radius: 10px;
+                  background: linear-gradient(
+                    180deg,
+                    rgba(99, 102, 241, 0.03),
+                    transparent
+                  );
+                "
+              >
+                <strong>Test tayyor emas</strong>
+                <div style="margin-top: 8px">
+                  Sozlamalarni tanlab,
+                  <button
+                    id="startBtnInline"
+                    class="btn primary"
+                    style="padding: 8px 12px; font-size: 0.95rem"
+                  >
+                    Boshlash
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="resultPanel" class="card" style="display: none">
+            <div class="result-card">
+              <div class="medal" id="medal">🥉</div>
+              <div>
+                <div class="result-text" id="resultTitle">
+                  Siz 0/0 to‘g‘ri topdingiz (0%)
+                </div>
+                <div style="margin-top: 8px; color: #475569" id="resultAdvice">
+                  Yaxshi — ammo yana mashq qilish kerak.
+                </div>
+                <div style="margin-top: 12px">
+                  <button id="retryBtn" class="btn primary">
+                    🔁 Yana bir marta
+                  </button>
+                  <button id="goSettings" class="btn ghost">
+                    ⚙️ Sozlamalar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <footer class="footer">
+            <p>© 2025 Barcha huquqlar himoyalangan</p>
+            <p>Dasturchi: <strong>Olimjonov Rahmonjon</strong></p>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* ==========================
+   DATA: LESSONS (sample)
+   - Siz bu obyektga 25 ta bo'lim qo'shasiz.
+   - Har bir lesson array ichida {romaji,hiragana,translation} obyekt bo'lsin.
+   ========================== */
+      const LESSONS = {
+        1: {
+          id: 1,
+          title: "Bo‘lim 1 — Tanishtirish va Millatlar",
+          words: [
+            { romaji: "watashi", hiragana: "わたし", translation: "men" },
+            {
+              romaji: "watashitachi",
+              hiragana: "わたしたち",
+              translation: "biz",
+            },
+            { romaji: "anata", hiragana: "あなた", translation: "siz" },
+            {
+              romaji: "ano hito",
+              hiragana: "あのひと / あの人",
+              translation: "u kishi",
+            },
+            {
+              romaji: "minasan",
+              hiragana: "みなさん / 皆さん",
+              translation: "hamma, sizlar",
+            },
+            {
+              romaji: "sensei",
+              hiragana: "せんせい / 先生",
+              translation: "ustoz",
+            },
+            {
+              romaji: "gakusei",
+              hiragana: "がくせい / 学生",
+              translation: "talaba",
+            },
+            {
+              romaji: "daigaku",
+              hiragana: "だいがく / 大学",
+              translation: "universitet",
+            },
+            {
+              romaji: "nihon",
+              hiragana: "にほん / 日本",
+              translation: "Yaponiya",
+            },
+            { romaji: "amerika", hiragana: "アメリカ", translation: "Amerika" },
+          ],
+        },
+        2: {
+          id: 2,
+          title: "Bo‘lim 2 — Kundalik narsalar",
+          words: [
+            { romaji: "inu", hiragana: "いぬ", translation: "it" },
+            { romaji: "neko", hiragana: "ねこ", translation: "mushuk" },
+            { romaji: "hon", hiragana: "ほん", translation: "kitob" },
+            { romaji: "mizu", hiragana: "みず", translation: "suv" },
+            { romaji: "denwa", hiragana: "でんわ", translation: "telefon" },
+            { romaji: "gakkou", hiragana: "がっこう", translation: "maktab" },
+            { romaji: "kutsu", hiragana: "くつ", translation: "poyabzal" },
+            { romaji: "ie", hiragana: "いえ", translation: "uy" },
+          ],
+        },
+        /* 💡 Shu yerga qolgan 23 bo‘limlarni shu formatda qo‘shing:
+     3: { id:3, title:"Bo‘lim 3 — ...", words:[ {romaji:"", hiragana:"", translation:""} ] }
+  */
+      };
+
+      /* ==========================
+   App state + element refs
+   ========================== */
+      const lessonSelect = document.getElementById("lessonSelect");
+      const fromIdx = document.getElementById("fromIdx");
+      const toIdx = document.getElementById("toIdx");
+      const countInput = document.getElementById("count");
+      const startBtn = document.getElementById("startBtn");
+      const startBtnInline = document.getElementById("startBtnInline");
+      const resetBtn = document.getElementById("resetBtn");
+
+      const quizArea = document.getElementById("quizArea");
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+      const lessonMeta = document.getElementById("lessonMeta");
+      const pctText = document.getElementById("pctText");
+
+      const resultPanel = document.getElementById("resultPanel");
+      const resultTitle = document.getElementById("resultTitle");
+      const resultAdvice = document.getElementById("resultAdvice");
+      const medalEl = document.getElementById("medal");
+      const retryBtn = document.getElementById("retryBtn");
+      const goSettingsBtn = document.getElementById("goSettings");
+
+      /* state */
+      let poolWords = []; // objects with romaji/hiragana/translation
+      let questions = [];
+      let currentIndex = 0;
+      let score = 0;
+
+      /* ==========================
+   Init: fill select with lessons
+   ========================== */
+      function initLessonSelect() {
+        lessonSelect.innerHTML = "";
+        Object.values(LESSONS).forEach((lesson) => {
+          const opt = document.createElement("option");
+          opt.value = lesson.id;
+          opt.textContent = `${lesson.id} — ${lesson.title} (${lesson.words.length})`;
+          lessonSelect.appendChild(opt);
+        });
+      }
+      initLessonSelect();
+
+      /* ==========================
+   Helpers
+   ========================== */
+      function shuffle(arr) {
+        return arr.slice().sort(() => Math.random() - 0.5);
+      }
+
+      function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
+      }
+
+      function collectPool() {
+        // priority: if fromIdx/toIdx filled -> use range; else use selected options
+        const f = parseInt(fromIdx.value);
+        const t = parseInt(toIdx.value);
+        let selected = [];
+        if (!isNaN(f) && !isNaN(t) && f > 0 && t > 0 && f <= t) {
+          for (let i = f; i <= t; i++) {
+            if (LESSONS[i]) selected.push(LESSONS[i]);
+          }
+        } else {
+          // multiple select
+          const opts = Array.from(lessonSelect.selectedOptions).map((o) =>
+            parseInt(o.value)
+          );
+          if (opts.length === 0) {
+            // fallback to first lesson
+            selected.push(LESSONS[1]);
+          } else {
+            opts.forEach((id) => {
+              if (LESSONS[id]) selected.push(LESSONS[id]);
+            });
+          }
+        }
+        // flatten words
+        const flat = [];
+        selected.forEach((lesson) => {
+          lesson.words.forEach((w) =>
+            flat.push(Object.assign({}, w, { lessonId: lesson.id }))
+          );
+        });
+        return flat;
+      }
+
+      /* Build questions from pool: choose N random words */
+      function prepareQuestions() {
+        poolWords = collectPool();
+        const total = poolWords.length;
+        const requested = clamp(parseInt(countInput.value) || 10, 1, total);
+        if (total === 0) {
+          alert("Bo‘limlarda so‘zlar yo‘q. Ilk bo‘limlarni qo‘shing.");
+          return false;
+        }
+        // choose random unique words
+        const selected = shuffle(poolWords).slice(0, requested);
+        // Build question objects with options (correct + 3 wrong from pool)
+        questions = selected.map((word) => {
+          // pick wrong answers from pool (translations) excluding correct
+          const wrongPool = poolWords.filter(
+            (p) => p.translation !== word.translation
+          );
+          const wrong = shuffle(wrongPool)
+            .slice(0, 3)
+            .map((w) => w.translation);
+          const options = shuffle([word.translation, ...wrong]);
+          return {
+            source: word, // contains romaji/hiragana
+            options,
+            answer: word.translation,
+          };
+        });
+        return true;
+      }
+
+      /* ==========================
+   Render question UI
+   ========================== */
+      function renderQuestion() {
+        if (currentIndex >= questions.length) {
+          showResult();
+          return;
+        }
+        const q = questions[currentIndex];
+        const total = questions.length;
+        // header
+        progressText.textContent = `Savol: ${currentIndex + 1} / ${total}`;
+        lessonMeta.textContent = `Bo‘lim: ${q.source.lessonId} • ${q.source.romaji} — ${q.source.hiragana}`;
+        const pct = Math.round((currentIndex / total) * 100);
+        progressBar.style.width = pct + "%";
+        pctText.textContent = pct + "%";
+
+        // build card
+        const container = document.createElement("div");
+        container.className = "fade-in";
+        container.innerHTML = `
+    <div class="question-row">
+      <div>
+        <div class="counter">Savol ${currentIndex + 1} / ${total}</div>
+        <div class="meta">Tarjima yoki romaji bo‘yicha javobni tanlang</div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="question">${
+        q.source.hiragana
+      } <span style="font-weight:500;color:#475569;font-size:0.95rem">(${
+          q.source.romaji
+        })</span></div>
+      <div class="options" role="list">
+        ${q.options
+          .map(
+            (opt, idx) => `
+          <button class="option" data-idx="${idx}" role="listitem" aria-label="Variant ${
+              idx + 1
+            }">
+            <div class="left">${String.fromCharCode(65 + idx)}</div>
+            <div class="txt">${opt}</div>
+          </button>`
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+        quizArea.innerHTML = "";
+        quizArea.appendChild(container);
+
+        // attach handlers
+        const optionButtons = quizArea.querySelectorAll(".option");
+        optionButtons.forEach((btn) => {
+          btn.addEventListener("click", () => onChoose(btn, q.answer));
+          btn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onChoose(btn, q.answer);
+            }
+          });
+          btn.tabIndex = 0;
+        });
+      }
+
+      /* ==========================
+   Answer handling
+   ========================== */
+      function onChoose(btn, correct) {
+        // disable further clicks
+        const all = quizArea.querySelectorAll(".option");
+        all.forEach((b) => (b.style.pointerEvents = "none"));
+
+        const chosenText = btn.querySelector(".txt").innerText;
+        if (chosenText === correct) {
+          btn.classList.add("correct");
+          score++;
+        } else {
+          btn.classList.add("wrong");
+          // highlight correct one
+          all.forEach((b) => {
+            if (b.querySelector(".txt").innerText === correct)
+              b.classList.add("correct");
+          });
+        }
+
+        // next question after short delay
+        setTimeout(() => {
+          currentIndex++;
+          renderQuestion();
+        }, 700);
+      }
+
+      /* ==========================
+   Show result
+   ========================== */
+      function showResult() {
+        const total = questions.length;
+        const pct = Math.round((score / total) * 100);
+        progressBar.style.width = "100%";
+        pctText.textContent = pct + "%";
+        resultPanel.style.display = "block";
+        quizArea.innerHTML = "";
+        // medals & advice
+        let medal = "🥉",
+          titleText = "Yaxshi boshlang‘ich!";
+        let advice = "Yana mashq qiling — ajoyib natijaga erishasiz.";
+        if (pct >= 90) {
+          medal = "🏅";
+          titleText = "Aʼlo!";
+          advice = "Siz juda yaxshi bilasiz — davom eting.";
+        } else if (pct >= 75) {
+          medal = "🥈";
+          titleText = "Zo‘r!";
+          advice = "Yaxshi natija. Biroz mashq qiling.";
+        } else if (pct >= 50) {
+          medal = "🥉";
+          titleText = "Qoniqarli";
+          advice = "O‘rta daraja — takrorlash foydali bo‘ladi.";
+        } else {
+          medal = "💪";
+          titleText = "Boshlash joyi";
+          advice =
+            "Kelib o‘tgan xatoliklarni ko‘rib chiqing va qayta urinib ko‘ring.";
+        }
+
+        medalEl.textContent = medal;
+        resultTitle.textContent = `${titleText} — Siz ${score}/${total} (${pct}%) to‘g‘ri topdingiz.`;
+        resultAdvice.textContent = advice;
+
+        // smooth scroll to result
+        resultPanel.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      /* ==========================
+   Events: start/reset/retry
+   ========================== */
+      function startTest() {
+        resultPanel.style.display = "none";
+        const ok = prepareQuestions();
+        if (!ok) return;
+        // init state
+        currentIndex = 0;
+        score = 0;
+        renderQuestion();
+      }
+      startBtn.addEventListener("click", startTest);
+      startBtnInline.addEventListener("click", startTest);
+
+      resetBtn.addEventListener("click", () => {
+        // clear picks & reset UI
+        fromIdx.value = "";
+        toIdx.value = "";
+        countInput.value = 10;
+        // select first lesson by default
+        Array.from(lessonSelect.options).forEach(
+          (opt) => (opt.selected = false)
+        );
+        lessonSelect.options[0].selected = true;
+        quizArea.innerHTML = `<div style="text-align:center;color:#64748b;padding:40px 10px;border-radius:10px;background:linear-gradient(180deg,rgba(99,102,241,0.03),transparent)"><strong>Test tayyor emas</strong><div style="margin-top:8px">Sozlamalarni tanlab, <button id="startBtnInline2" class="btn primary" style="padding:8px 12px;font-size:0.95rem">Boshlash</button></div></div>`;
+        document
+          .getElementById("startBtnInline2")
+          ?.addEventListener("click", startTest);
+        progressBar.style.width = "0%";
+        pctText.textContent = "0%";
+        lessonMeta.textContent = "Hech qanday test boshlanmagan";
+        progressText.textContent = "Tanlangan: 0 savol";
+        resultPanel.style.display = "none";
+      });
+
+      retryBtn.addEventListener("click", () => {
+        // restart with same settings
+        currentIndex = 0;
+        score = 0;
+        resultPanel.style.display = "none";
+        renderQuestion();
+      });
+
+      goSettingsBtn.addEventListener("click", () => {
+        // scroll to settings
+        document
+          .querySelector(".panel")
+          .scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+
+      /* ==========================
+   Accessibility: keyboard quick start
+   ========================== */
+      document.addEventListener("keydown", (e) => {
+        if (
+          (e.key === "Enter" || e.key === " ") &&
+          document.activeElement === document.body
+        ) {
+          startTest();
+        }
+      });
+
+      /* ==========================
+   Initial selection defaults
+   ========================== */
+      (function initDefaults() {
+        // select first lesson by default
+        if (lessonSelect.options.length > 0)
+          lessonSelect.options[0].selected = true;
+        countInput.value = 10;
+      })();
+    </script>
+  </body>
+</html>
