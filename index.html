@@ -465,68 +465,81 @@
    - Har bir lesson array ichida {romaji,hiragana,translation} obyekt bo'lsin.
    ========================== */
       const LESSONS = {
-        1: {
-          id: 1,
-          title: "Bo‘lim 1 — Tanishtirish va Millatlar",
-          words: [
-            { romaji: "watashi", hiragana: "わたし", translation: "men" },
-            {
-              romaji: "watashitachi",
-              hiragana: "わたしたち",
-              translation: "biz",
-            },
-            { romaji: "anata", hiragana: "あなた", translation: "siz" },
-            {
-              romaji: "ano hito",
-              hiragana: "あのひと / あの人",
-              translation: "u kishi",
-            },
-            {
-              romaji: "minasan",
-              hiragana: "みなさん / 皆さん",
-              translation: "hamma, sizlar",
-            },
-            {
-              romaji: "sensei",
-              hiragana: "せんせい / 先生",
-              translation: "ustoz",
-            },
-            {
-              romaji: "gakusei",
-              hiragana: "がくせい / 学生",
-              translation: "talaba",
-            },
-            {
-              romaji: "daigaku",
-              hiragana: "だいがく / 大学",
-              translation: "universitet",
-            },
-            {
-              romaji: "nihon",
-              hiragana: "にほん / 日本",
-              translation: "Yaponiya",
-            },
-            { romaji: "amerika", hiragana: "アメリカ", translation: "Amerika" },
-          ],
-        },
-        2: {
-          id: 2,
-          title: "Bo‘lim 2 — Kundalik narsalar",
-          words: [
-            { romaji: "inu", hiragana: "いぬ", translation: "it" },
-            { romaji: "neko", hiragana: "ねこ", translation: "mushuk" },
-            { romaji: "hon", hiragana: "ほん", translation: "kitob" },
-            { romaji: "mizu", hiragana: "みず", translation: "suv" },
-            { romaji: "denwa", hiragana: "でんわ", translation: "telefon" },
-            { romaji: "gakkou", hiragana: "がっこう", translation: "maktab" },
-            { romaji: "kutsu", hiragana: "くつ", translation: "poyabzal" },
-            { romaji: "ie", hiragana: "いえ", translation: "uy" },
-          ],
-        },
-        /* 💡 Shu yerga qolgan 23 bo‘limlarni shu formatda qo‘shing:
-     3: { id:3, title:"Bo‘lim 3 — ...", words:[ {romaji:"", hiragana:"", translation:""} ] }
-  */
-      };
+  1: {
+    id: 1,
+    title: "Bo‘lim 1 — Tanishtirish va Millatlar",
+    words: [
+      { romaji: "watashi", hiragana: "わたし", translation: "men" },
+      { romaji: "watashitachi", hiragana: "わたしたち", translation: "biz" },
+      { romaji: "anata", hiragana: "あなた", translation: "siz" },
+      { romaji: "ano hito", hiragana: "あのひと / あの人", translation: "u kishi" },
+      { romaji: "minasan", hiragana: "みなさん / 皆さん", translation: "hamma, sizlar" },
+      { romaji: "sensei", hiragana: "せんせい / 先生", translation: "ustoz" },
+      { romaji: "gakusei", hiragana: "がくせい / 学生", translation: "talaba" },
+      { romaji: "daigaku", hiragana: "だいがく / 大学", translation: "universitet" },
+      { romaji: "nihon", hiragana: "にほん / 日本", translation: "Yaponiya" },
+      { romaji: "amerika", hiragana: "アメリカ", translation: "Amerika" },
+    ],
+  },
+  2: {
+    id: 2,
+    title: "Bo‘lim 2 — Kundalik narsalar",
+    words: [
+      { romaji: "inu", hiragana: "いぬ", translation: "it" },
+      { romaji: "neko", hiragana: "ねこ", translation: "mushuk" },
+      { romaji: "hon", hiragana: "ほん", translation: "kitob" },
+      { romaji: "mizu", hiragana: "みず", translation: "suv" },
+      { romaji: "denwa", hiragana: "でんわ", translation: "telefon" },
+      { romaji: "gakkou", hiragana: "がっこう", translation: "maktab" },
+      { romaji: "kutsu", hiragana: "くつ", translation: "poyabzal" },
+      { romaji: "ie", hiragana: "いえ", translation: "uy" },
+    ],
+  },
+  3: {
+    id: 3,
+    title: "Bo‘lim 3 — Kanji asosiy so‘zlar",
+    words: [
+      { romaji: "sensei", hiragana: "先生", translation: "o‘qituvchi / ustoz" },
+      { romaji: "sengetsu", hiragana: "先月", translation: "o‘tgan oy" },
+      { romaji: "seito", hiragana: "生徒", translation: "o‘quvchi" },
+      { romaji: "seikatsu", hiragana: "生活", translation: "hayot, turmush" },
+      { romaji: "tanjoubi", hiragana: "誕生日", translation: "tug‘ilgan kun" },
+      { romaji: "gakusei", hiragana: "学生", translation: "talaba" },
+      { romaji: "gakkou", hiragana: "学校", translation: "maktab" },
+      { romaji: "nihon", hiragana: "日本", translation: "Yaponiya" },
+      { romaji: "hito", hiragana: "人", translation: "inson, odam" },
+      { romaji: "gaikokujin", hiragana: "外国人", translation: "chet ellik, xorijlik" },
+      { romaji: "hitori", hiragana: "一人", translation: "1 kishi" },
+      { romaji: "futari", hiragana: "二人", translation: "2 kishi" },
+      { romaji: "sannin", hiragana: "三人", translation: "3 kishi" },
+      { romaji: "yonin", hiragana: "四人", translation: "4 kishi" },
+      { romaji: "hitobito", hiragana: "人々", translation: "odamlar" },
+      { romaji: "otona", hiragana: "大人", translation: "kattalar" },
+      { romaji: "gaikoku", hiragana: "外国", translation: "xorij, chet el" },
+      { romaji: "otokonoko", hiragana: "男の子", translation: "o‘g‘il bola" },
+      { romaji: "onna no hito", hiragana: "女の人", translation: "ayol" },
+      { romaji: "onnanoko", hiragana: "女の子", translation: "qiz bola" },
+      { romaji: "kanojo", hiragana: "彼女", translation: "u (ayol), sevgili qiz" },
+      { romaji: "kodomo", hiragana: "子供", translation: "bola, farzand" },
+      { romaji: "tomodachi", hiragana: "友だち", translation: "do‘st" },
+      { romaji: "chichi", hiragana: "父", translation: "otam (rasmiy)" },
+      { romaji: "otousan", hiragana: "お父さん", translation: "ota (hurmat shakli)" },
+      { romaji: "haha", hiragana: "母", translation: "onam (rasmiy)" },
+      { romaji: "okaasan", hiragana: "お母さん", translation: "ona (hurmat shakli)" },
+      { romaji: "yuumeina", hiragana: "有名な", translation: "mashhur" },
+      { romaji: "namae", hiragana: "名前", translation: "ism, nom" },
+      { romaji: "Tanaka-san", hiragana: "田中さん", translation: "Janob/Janob Tanaka" },
+      { romaji: "Yamada-san", hiragana: "山田さん", translation: "Janob/Janob Yamada" },
+      { romaji: "Fuji-san", hiragana: "ふじ山", translation: "Fuji tog‘i" },
+      { romaji: "yama", hiragana: "山", translation: "tog‘" },
+      { romaji: "nihongo", hiragana: "日本語", translation: "yapon tili" },
+      { romaji: "eigo", hiragana: "英語", translation: "ingliz tili" },
+      { romaji: "hon", hiragana: "本", translation: "kitob" },
+      { romaji: "〜hon", hiragana: "〜本", translation: "(silindrsimon narsalar uchun sanash birlik)" },
+    ],
+  },
+};
+
 
       /* ==========================
    App state + element refs
@@ -852,6 +865,74 @@
           lessonSelect.options[0].selected = true;
         countInput.value = 10;
       })();
+            function onChoose(btn, correct) {
+        const chosen = btn.querySelector(".txt").textContent;
+        const all = quizArea.querySelectorAll(".option");
+
+        all.forEach((o) => {
+          o.disabled = true; // keyin bosilmasin
+          const txt = o.querySelector(".txt").textContent;
+          if (txt === correct) {
+            o.classList.add("correct");
+          } else if (txt === chosen) {
+            o.classList.add("wrong");
+          }
+        });
+
+        if (chosen === correct) score++;
+
+        currentIndex++;
+        setTimeout(renderQuestion, 1000);
+      }
+
+      /* ==========================
+         Show Result
+      ========================== */
+      function showResult() {
+        quizArea.innerHTML = "";
+        resultPanel.style.display = "block";
+
+        const total = questions.length;
+        const pct = Math.round((score / total) * 100);
+
+        resultTitle.textContent = `Siz ${score}/${total} to‘g‘ri topdingiz (${pct}%)`;
+
+        if (pct === 100) {
+          medalEl.textContent = "🥇";
+          resultAdvice.textContent = "Ajoyib! Siz mutlaqo zo‘rsiz!";
+        } else if (pct >= 70) {
+          medalEl.textContent = "🥈";
+          resultAdvice.textContent = "Yaxshi natija! Lekin mukammal bo‘lish mumkin.";
+        } else {
+          medalEl.textContent = "🥉";
+          resultAdvice.textContent = "Mashq qilishni davom eting!";
+        }
+      }
+
+      /* ==========================
+         Event listeners
+      ========================== */
+      function startQuiz() {
+        currentIndex = 0;
+        score = 0;
+        resultPanel.style.display = "none";
+        if (prepareQuestions()) {
+          renderQuestion();
+        }
+      }
+
+      startBtn.addEventListener("click", startQuiz);
+      startBtnInline.addEventListener("click", startQuiz);
+      retryBtn.addEventListener("click", startQuiz);
+      goSettingsBtn.addEventListener("click", () => {
+        resultPanel.style.display = "none";
+        quizArea.innerHTML = `
+          <div style="text-align:center;color:#64748b;padding:40px 10px;border-radius:10px;background:linear-gradient(180deg,rgba(99,102,241,0.03),transparent)">
+            <strong>Test tayyor emas</strong>
+          </div>`;
+      });
+      resetBtn.addEventListener("click", () => window.location.reload());
+
     </script>
   </body>
 </html>
