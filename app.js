@@ -1,123 +1,410 @@
-// 📂 Baza – faqat 1-bo‘lim misol tariqasida
-const lessons = [
-  {
-    id: 1,
-    title: "Bo‘lim 1 — Salomlashish va asosiy so‘zlar",
-    words: [
-      { romaji: "watashi", hiragana: "わたし", translation: "men" },
-      { romaji: "anata", hiragana: "あなた", translation: "siz (sen)" },
-      { romaji: "sensei", hiragana: "せんせい", translation: "ustoz" },
-      { romaji: "gakusei", hiragana: "がくせい", translation: "talaba" },
-      { romaji: "daigaku", hiragana: "だいがく", translation: "universitet" },
-      { romaji: "nihon", hiragana: "にほん", translation: "Yaponiya" },
-      { romaji: "amerika", hiragana: "アメリカ", translation: "Amerika" },
-    ],
-  },
-];
-
+/* =========================
+   DOM elementlari
+========================= */
 const lessonSelect = document.getElementById("lessonSelect");
+const fromIdx = document.getElementById("fromIdx");
+const toIdx = document.getElementById("toIdx");
+const countInput = document.getElementById("count");
 const startBtn = document.getElementById("startBtn");
-const quiz = document.getElementById("quiz");
-const questionEl = document.getElementById("question");
-const optionsEl = document.getElementById("options");
-const nextBtn = document.getElementById("nextBtn");
-const resultEl = document.getElementById("result");
-const questionCountEl = document.getElementById("questionCount");
+const startBtnInline = document.getElementById("startBtnInline");
+const resetBtn = document.getElementById("resetBtn");
+const modeSelect = document.getElementById("modeSelect");
+const shuffleToggle = document.getElementById("shuffleToggle");
+const saveToggle = document.getElementById("saveToggle");
+const showRomajiToggle = document.getElementById("showRomajiToggle");
+const quizArea = document.getElementById("quizArea");
+const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
+const lessonMeta = document.getElementById("lessonMeta");
+const pctText = document.getElementById("pctText");
+const resultPanel = document.getElementById("resultPanel");
+const resultTitle = document.getElementById("resultTitle");
+const resultAdvice = document.getElementById("resultAdvice");
+const medalEl = document.getElementById("medal");
+const retryBtn = document.getElementById("retryBtn");
+const goSettingsBtn = document.getElementById("goSettings");
+const mistakesList = document.getElementById("mistakesList");
+const timeSpentEl = document.getElementById("timeSpent");
 
-let currentLesson = null;
-let questions = [];
-let currentIndex = 0;
-let score = 0;
+let pool = [],
+  questions = [],
+  currentIndex = 0,
+  score = 0,
+  mode = "flashcard";
+let userAnswers = [],
+  startedAt = 0,
+  timerInterval = null;
 
-// 🔹 Selectni to‘ldirish
-lessons.forEach((lesson) => {
-  const opt = document.createElement("option");
-  opt.value = lesson.id;
-  opt.textContent = lesson.title;
-  lessonSelect.appendChild(opt);
-});
-
-// 🔹 Boshlash
-startBtn.addEventListener("click", () => {
-  const lessonId = parseInt(lessonSelect.value);
-  const count = parseInt(questionCountEl.value);
-  currentLesson = lessons.find((l) => l.id === lessonId);
-
-  // random so‘zlar
-  questions = shuffle(currentLesson.words).slice(0, count);
-
-  currentIndex = 0;
-  score = 0;
-  resultEl.classList.add("hidden");
-  quiz.classList.remove("hidden");
-  showQuestion();
-});
-
-// 🔹 Savolni ko‘rsatish
-function showQuestion() {
-  resetState();
-
-  const word = questions[currentIndex];
-  questionEl.textContent = `👉 ${word.hiragana} (${word.romaji})`;
-
-  // variantlar
-  let options = [word];
-  while (options.length < 4 && options.length < currentLesson.words.length) {
-    const random =
-      currentLesson.words[
-        Math.floor(Math.random() * currentLesson.words.length)
-      ];
-    if (!options.includes(random)) options.push(random);
+/* =========================
+   Helper funksiyalar
+========================= */
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  options = shuffle(options);
+  return a;
+}
+function normalize(s) {
+  return String(s || "")
+    .toLowerCase()
+    .trim();
+}
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+function showRomaji() {
+  return showRomajiToggle.checked;
+}
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
-  options.forEach((opt) => {
-    const btn = document.createElement("button");
-    btn.textContent = opt.translation;
-    btn.classList.add("option-btn");
-    btn.addEventListener("click", () => selectAnswer(btn, opt, word));
-    optionsEl.appendChild(btn);
+/* =========================
+   Lesson select init
+========================= */
+function initLessonSelect() {
+  lessonSelect.innerHTML = "";
+  if (typeof LESSONS === "undefined") {
+    console.error("LESSONS topilmadi!");
+    return;
+  }
+  Object.values(LESSONS).forEach((lesson) => {
+    if (!lesson || !lesson.words) return;
+    const opt = document.createElement("option");
+    opt.value = lesson.id;
+    opt.textContent = `${lesson.id} — ${lesson.title} (${lesson.words.length})`;
+    lessonSelect.appendChild(opt);
   });
 }
 
-// 🔹 Javobni tanlash
-function selectAnswer(btn, chosen, correct) {
-  Array.from(optionsEl.children).forEach((b) => (b.disabled = true));
-
-  if (chosen === correct) {
-    btn.classList.add("correct");
-    score++;
+/* =========================
+   Pool yaratish
+========================= */
+function collectPool() {
+  let selected = [];
+  const f = parseInt(fromIdx.value),
+    t = parseInt(toIdx.value);
+  if (!isNaN(f) && !isNaN(t) && f > 0 && t >= f) {
+    for (let i = f; i <= t; i++) if (LESSONS[i]) selected.push(LESSONS[i]);
   } else {
-    btn.classList.add("wrong");
+    const opts = Array.from(lessonSelect.selectedOptions).map((o) =>
+      parseInt(o.value)
+    );
+    if (opts.length === 0) selected.push(LESSONS[1]);
+    else
+      opts.forEach((id) => {
+        if (LESSONS[id]) selected.push(LESSONS[id]);
+      });
   }
-  nextBtn.classList.remove("hidden");
+
+  const flat = [];
+  selected.forEach((lesson) => {
+    lesson.words.forEach((w) => {
+      flat.push({ ...w, lessonId: lesson.id, lessonTitle: lesson.title });
+    });
+  });
+  return flat;
 }
 
-// 🔹 Keyingiga o‘tish
-nextBtn.addEventListener("click", () => {
-  currentIndex++;
-  if (currentIndex < questions.length) {
-    showQuestion();
-  } else {
-    showResult();
+/* =========================
+   Savollar tayyorlash
+========================= */
+function prepareQuestions() {
+  pool = collectPool();
+  if (pool.length === 0) {
+    alert("So‘zlar topilmadi.");
+    return false;
+  }
+
+  const requested = clamp(parseInt(countInput.value) || 10, 1, pool.length);
+  let sel = pool.slice();
+  if (shuffleToggle.checked) sel = shuffle(sel);
+  sel = sel.slice(0, requested);
+  mode = modeSelect.value;
+
+  questions = sel.map((w) => {
+    if (mode === "multiple") {
+      const wrongPool = pool.filter(
+        (p) => normalize(p.translation) !== normalize(w.translation)
+      );
+      const wrong = shuffle(wrongPool)
+        .slice(0, 3)
+        .map((x) => x.translation);
+      const options = shuffle([w.translation, ...wrong]);
+      return { source: w, options, answer: w.translation };
+    } else {
+      return { source: w, options: [], answer: w.translation };
+    }
+  });
+
+  currentIndex = 0;
+  score = 0;
+  userAnswers = [];
+  startedAt = Date.now();
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const sec = Math.floor((Date.now() - startedAt) / 1000);
+    timeSpentEl.textContent = `Vaqt: ${sec} s`;
+  }, 1000);
+
+  resultPanel.style.display = "none";
+  renderQuestion();
+  updateProgress();
+
+  if (saveToggle.checked) saveState();
+  return true;
+}
+
+/* =========================
+   Progress update
+========================= */
+function updateProgress() {
+  const total = questions.length;
+  const pct = total ? Math.round((currentIndex / total) * 100) : 0;
+  progressBar.style.width = pct + "%";
+  pctText.textContent = pct + "%";
+  progressText.textContent = `Savol: ${currentIndex + 1}/${total}`;
+  lessonMeta.textContent = questions[currentIndex]
+    ? `Bo'lim: ${questions[currentIndex].source.lessonId} — ${questions[currentIndex].source.lessonTitle}`
+    : "Hech qanday test boshlanmagan";
+}
+
+/* =========================
+   Render flashcard
+========================= */
+function renderFlashcard(q) {
+  quizArea.innerHTML = `
+    <div class="flashcard" id="flashWrap" tabindex="0">
+      <div class="card-inner">
+        <div class="card-face front" style="font-size:1.5rem;font-weight:bold;text-align:center">
+          ${escapeHtml(q.source.hiragana)}
+          ${
+            showRomaji()
+              ? `<div style="font-size:1rem;color:#25663f;margin-top:5px">${escapeHtml(
+                  q.source.romaji
+                )}</div>`
+              : ""
+          }
+        </div>
+        <div class="card-face back" style="font-size:1.25rem;font-weight:bold;text-align:center">
+          ${escapeHtml(q.answer)}
+          <div style="margin-top:5px;color:#2b6a4a">${escapeHtml(
+            q.source.lessonTitle
+          )} — Bo'lim ${q.source.lessonId}</div>
+          ${
+            showRomaji()
+              ? `<div style="margin-top:5px;color:#25663f">${escapeHtml(
+                  q.source.romaji
+                )}</div>`
+              : ""
+          }
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:10px;text-align:center">
+      <button id="flipCard" class="btn primary">🔁 Flip</button>
+      <button id="prevCard" class="btn ghost">◀ Oldingi</button>
+      <button id="nextCard" class="btn ghost">Keyingi ▶</button>
+    </div>
+  `;
+
+  const flashWrap = document.getElementById("flashWrap");
+  const inner = flashWrap.querySelector(".card-inner");
+
+  document.getElementById("flipCard").onclick = () =>
+    inner.classList.toggle("flipped");
+  document.getElementById("nextCard").onclick = () => {
+    currentIndex = Math.min(currentIndex + 1, questions.length - 1);
+    renderQuestion();
+  };
+  document.getElementById("prevCard").onclick = () => {
+    currentIndex = Math.max(currentIndex - 1, 0);
+    renderQuestion();
+  };
+}
+
+/* =========================
+   Render multiple choice
+========================= */
+function renderMultiple(q) {
+  const optionsHtml = q.options
+    .map(
+      (o, i) =>
+        `<button class="option-btn btn ghost" data-val="${o}">${String.fromCharCode(
+          65 + i
+        )}. ${o}</button>`
+    )
+    .join("");
+  quizArea.innerHTML = `
+    <div class="question-card" style="text-align:center;padding:20px;border:1px solid #ccc;border-radius:10px">
+      <div style="font-size:1.5rem;font-weight:bold">${escapeHtml(
+        q.source.hiragana
+      )}</div>
+      ${
+        showRomaji()
+          ? `<div style="margin-top:5px;color:#25663f">${escapeHtml(
+              q.source.romaji
+            )}</div>`
+          : ""
+      }
+      <div style="margin-top:15px">${optionsHtml}</div>
+    </div>
+  `;
+  quizArea.querySelectorAll(".option-btn").forEach((b) => {
+    b.onclick = () => checkAnswer(b.dataset.val);
+  });
+}
+
+/* =========================
+   Render write mode
+========================= */
+function renderWrite(q) {
+  quizArea.innerHTML = `
+    <div class="question-card" style="text-align:center;padding:20px;border:1px solid #ccc;border-radius:10px">
+      <div style="font-size:1.5rem;font-weight:bold">${escapeHtml(
+        q.source.hiragana
+      )}</div>
+      ${
+        showRomaji()
+          ? `<div style="margin-top:5px;color:#25663f">${escapeHtml(
+              q.source.romaji
+            )}</div>`
+          : ""
+      }
+      <input type="text" id="writeInput" placeholder="Javobni yozing" style="margin-top:15px;padding:5px;width:200px" />
+      <button id="writeSubmit" class="btn primary" style="margin-left:5px">✅ Tekshirish</button>
+    </div>
+  `;
+  document.getElementById("writeSubmit").onclick = () => {
+    const val = document.getElementById("writeInput").value;
+    checkAnswer(val);
+  };
+}
+
+/* =========================
+   Javobni tekshirish
+========================= */
+function checkAnswer(ans) {
+  if (!ans) return;
+  const q = questions[currentIndex];
+  const correct = normalize(q.answer);
+  if (normalize(ans) === correct) score++;
+  else userAnswers.push({ q, given: ans });
+
+  if (currentIndex < questions.length - 1) {
+    currentIndex++;
+    renderQuestion();
+  } else finishTest();
+  if (saveToggle.checked) saveState();
+}
+
+/* =========================
+   Render savol
+========================= */
+function renderQuestion() {
+  updateProgress();
+  if (questions.length === 0) return;
+  const q = questions[currentIndex];
+  if (mode === "flashcard") renderFlashcard(q);
+  else if (mode === "multiple") renderMultiple(q);
+  else renderWrite(q);
+}
+
+/* =========================
+   Test tugashi
+========================= */
+function finishTest() {
+  if (timerInterval) clearInterval(timerInterval);
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  resultTitle.textContent = `Siz ${score}/${total} to‘g‘ri topdingiz (${pct}%)`;
+  medalEl.textContent =
+    pct >= 90 ? "🥇" : pct >= 75 ? "🥈" : pct >= 50 ? "🥉" : "❌";
+  resultAdvice.textContent =
+    "Natijangizni yaxshilash uchun mashq qilishingiz mumkin.";
+  mistakesList.innerHTML = userAnswers.length
+    ? userAnswers
+        .map(
+          (u) =>
+            `<div>${escapeHtml(u.q.source.hiragana)} → Javob: ${escapeHtml(
+              u.given
+            )}, To‘g‘ri: ${escapeHtml(u.q.answer)}</div>`
+        )
+        .join("")
+    : "";
+  resultPanel.style.display = "block";
+  quizArea.innerHTML = "";
+  progressBar.style.width = "100%";
+}
+
+/* =========================
+   Keyboard shortcuts
+========================= */
+document.addEventListener("keydown", (e) => {
+  if (questions.length === 0) return;
+  if (mode === "multiple") {
+    const idx = e.key.toUpperCase().charCodeAt(0) - 65;
+    if (idx >= 0 && idx < 4) checkAnswer(questions[currentIndex].options[idx]);
+  } else if (mode === "write") {
+    if (e.key === "Enter") document.getElementById("writeSubmit")?.click();
+  } else if (mode === "flashcard") {
+    if (e.key === " " || e.key === "Spacebar")
+      document.getElementById("flipCard")?.click();
   }
 });
 
-// 🔹 Natija
-function showResult() {
-  quiz.classList.add("hidden");
-  resultEl.classList.remove("hidden");
-
-  const percent = Math.round((score / questions.length) * 100);
-  resultEl.textContent = `✅ Siz ${questions.length} ta savoldan ${score} tasini to‘g‘ri topdingiz. (${percent}%)`;
+/* =========================
+   LocalStorage saqlash
+========================= */
+function saveState() {
+  const state = { questions, currentIndex, score, userAnswers, startedAt };
+  localStorage.setItem("quizState", JSON.stringify(state));
 }
 
-// 🔹 Yordamchi: random aralashtirish
-function shuffle(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
+function loadState() {
+  const saved = localStorage.getItem("quizState");
+  if (saved) {
+    const state = JSON.parse(saved);
+    questions = state.questions || [];
+    currentIndex = state.currentIndex || 0;
+    score = state.score || 0;
+    userAnswers = state.userAnswers || [];
+    startedAt = state.startedAt || Date.now();
+    renderQuestion();
+    updateProgress();
+  }
 }
 
-function resetState() {
-  nextBtn.classList.add("hidden");
-  optionsEl.innerHTML = "";
-}
+/* =========================
+   DOM tayyor bo‘lganda eventlar
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  initLessonSelect();
+  startBtn.onclick = prepareQuestions;
+  startBtnInline.onclick = prepareQuestions;
+  resetBtn.onclick = () => {
+    currentIndex = score = 0;
+    userAnswers = questions = [];
+    quizArea.innerHTML = "";
+    progressBar.style.width = "0%";
+    progressText.textContent = "";
+    lessonMeta.textContent = "";
+    resultPanel.style.display = "none";
+    if (timerInterval) clearInterval(timerInterval);
+  };
+  retryBtn.onclick = prepareQuestions;
+  goSettingsBtn.onclick = resetBtn;
+
+  if (saveToggle.checked) loadState();
+});
+
+document.getElementById("flipCard").onclick = () => {
+  const flashWrap = document.getElementById("flashWrap");
+  flashWrap.classList.toggle("flipped");
+};
